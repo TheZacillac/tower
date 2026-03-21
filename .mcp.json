@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "tower": {
+      "command": "uvx",
+      "args": [
+        "--from", "/home/zac/Projects/tower",
+        "--with", "/home/zac/Projects/seer/seer-py",
+        "--with", "/home/zac/Projects/tome/tome-py",
+        "tower-mcp"
+      ]
+    }
+  }
+}
