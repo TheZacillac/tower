@@ -3,10 +3,10 @@
     "tower": {
       "command": "uvx",
       "args": [
-        "--from", "/home/zac/Projects/tower",
-        "--with", "/home/zac/Projects/seer/seer-py",
-        "--with", "/home/zac/Projects/tome/tome-py",
-        "--with", "/home/zac/Projects/scrolls",
+        "--from", ".",
+        "--with", "../seer/seer-py",
+        "--with", "../tome/tome-py",
+        "--with", "../scrolls",
         "tower-mcp"
       ]
     }
