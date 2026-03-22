@@ -60,9 +60,14 @@ Tower provides a single MCP (Model Context Protocol) server that exposes tools f
 │     seer-core       │          │     tome-core        │
 │   (Rust library)    │          │   (Rust library)     │
 └─────────────────────┘          └─────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│                     scrolls (Python)                        │
+│          AI agent skill definitions & reference docs         │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-Tower is a thin orchestration layer. All business logic lives in the upstream Rust core libraries; Tower simply registers their Python-exposed functions as MCP tools and routes calls to the appropriate handler.
+Tower is a thin orchestration layer. All business logic lives in the upstream Rust core libraries; Tower registers their Python-exposed functions as MCP tools and routes calls to the appropriate handler. Scrolls provides companion skill definitions and reference documentation for AI agents.
 
 ---
 
@@ -200,6 +205,27 @@ Reference database lookups powered by [Tome](https://github.com/TheZacillac/tome
 | `tome_record_search` | Search DNS record types by partial match |
 | `tome_glossary_lookup` | Look up a domain industry term or abbreviation |
 | `tome_glossary_search` | Search glossary terms by partial match |
+
+---
+
+## Bundled Skills
+
+Tower installs [Scrolls](https://github.com/TheZacillac/scrolls), a collection of AI agent skill definitions that provide contextual knowledge about Seer and Tome. Skills include reference documentation, CLI command guides, and scripting examples.
+
+| Skill | Contents |
+|-------|----------|
+| **seer** | CLI reference, REST API endpoints, MCP tools, Python bindings, REPL guide, configuration, scripting examples |
+| **tome** | TLD database, DNS record types, glossary terms *(in progress)* |
+
+Skills are accessible programmatically after installation:
+
+```python
+import scrolls
+
+scrolls.list_skills()                              # ['seer', 'tome']
+scrolls.skill_file("seer")                         # Path to seer/SKILL.md
+scrolls.skill_file("seer", "reference/cli.md")     # Path to CLI reference
+```
 
 ---
 
