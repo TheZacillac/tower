@@ -43,7 +43,7 @@ Tower provides a single MCP (Model Context Protocol) server that exposes tools f
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                         tower-mcp                           │
-│                    (MCP Server · stdio)                      │
+│                    (MCP Server · stdio)                     │
 ├─────────────────────────────┬───────────────────────────────┤
 │      tower/tools/seer.py    │      tower/tools/tome.py      │
 │       (13 tools)            │        (6 tools)              │
@@ -51,19 +51,19 @@ Tower provides a single MCP (Model Context Protocol) server that exposes tools f
            │                                 │
            ▼                                 ▼
 ┌─────────────────────┐          ┌─────────────────────┐
-│     seer (Python)   │          │     tome (Python)    │
-│    PyO3 bindings    │          │    PyO3 bindings     │
+│     seer (Python)   │          │     tome (Python)   │
+│    PyO3 bindings    │          │    PyO3 bindings    │
 └──────────┬──────────┘          └──────────┬──────────┘
            │                                 │
            ▼                                 ▼
 ┌─────────────────────┐          ┌─────────────────────┐
-│     seer-core       │          │     tome-core        │
-│   (Rust library)    │          │   (Rust library)     │
+│     seer-core       │          │     tome-core       │
+│   (Rust library)    │          │   (Rust library)    │
 └─────────────────────┘          └─────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
 │                     scrolls (Python)                        │
-│          AI agent skill definitions & reference docs         │
+│          AI agent skill definitions & reference docs        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
