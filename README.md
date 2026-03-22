@@ -54,8 +54,8 @@ Tower provides a single MCP (Model Context Protocol) server that exposes tools f
 │     seer (Python)   │          │     tome (Python)   │
 │    PyO3 bindings    │          │    PyO3 bindings    │
 └──────────┬──────────┘          └──────────┬──────────┘
-           │                                 │
-           ▼                                 ▼
+           │                                │
+           ▼                                ▼
 ┌─────────────────────┐          ┌─────────────────────┐
 │     seer-core       │          │     tome-core       │
 │   (Rust library)    │          │   (Rust library)    │
