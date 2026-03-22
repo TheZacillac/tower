@@ -31,6 +31,7 @@ Tower provides a single MCP (Model Context Protocol) server that exposes tools f
 | **Unified MCP Server** | Single server exposing tools from Seer and Tome through one connection |
 | **Domain Intelligence** | WHOIS, RDAP, DNS, propagation, and status checks via Seer |
 | **Reference Data** | TLD info, DNS record type definitions, and glossary terms via Tome |
+| **Bundled Skills** | Installs [Scrolls](https://github.com/TheZacillac/scrolls) — AI agent skill definitions for Seer and Tome |
 | **Bulk Operations** | Process up to 100 domains concurrently for any Seer operation |
 | **Modular Design** | Each tool source is an independent module — easy to add, remove, or update |
 | **19 Tools** | 13 Seer tools + 6 Tome tools registered through a single dispatch table |
@@ -85,11 +86,17 @@ cd tower
 uv pip install -e .
 ```
 
-If the seer and tome Python bindings are not published to PyPI, install them from their local paths:
+If the seer, tome, and scrolls packages are not published to PyPI, install them from their local paths:
 
 ```bash
-uv pip install -e /path/to/seer/seer-py -e /path/to/tome/tome-py -e .
+uv pip install \
+    -e /path/to/seer/seer-py \
+    -e /path/to/tome/tome-py \
+    -e /path/to/scrolls \
+    -e .
 ```
+
+This installs the MCP tools (seer, tome), the AI agent skills (scrolls), and Tower itself.
 
 ### Using uvx (No Install Required)
 
@@ -97,6 +104,7 @@ uv pip install -e /path/to/seer/seer-py -e /path/to/tome/tome-py -e .
 uvx --from /path/to/tower \
     --with /path/to/seer/seer-py \
     --with /path/to/tome/tome-py \
+    --with /path/to/scrolls \
     tower-mcp
 ```
 
@@ -125,6 +133,7 @@ Add to your project's `.mcp.json`:
         "--from", "/path/to/tower",
         "--with", "/path/to/seer/seer-py",
         "--with", "/path/to/tome/tome-py",
+        "--with", "/path/to/scrolls",
         "tower-mcp"
       ]
     }
@@ -270,7 +279,11 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 # Install with dev dependencies
-pip install -e /path/to/seer/seer-py -e /path/to/tome/tome-py -e ".[dev]"
+pip install \
+    -e /path/to/seer/seer-py \
+    -e /path/to/tome/tome-py \
+    -e /path/to/scrolls \
+    -e ".[dev]"
 ```
 
 ### Running Tests
@@ -322,6 +335,7 @@ tower/
 | [MCP SDK](https://github.com/modelcontextprotocol/python-sdk) | Model Context Protocol server framework |
 | [Seer](https://github.com/TheZacillac/seer) | Domain intelligence (WHOIS, RDAP, DNS, status) |
 | [Tome](https://github.com/TheZacillac/tome) | Reference data (TLDs, record types, glossary) |
+| [Scrolls](https://github.com/TheZacillac/scrolls) | AI agent skill definitions for Seer and Tome |
 | [Hatchling](https://hatch.pypa.io/) | Python build backend |
 
 ---
