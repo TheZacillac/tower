@@ -277,7 +277,7 @@ TOOLS: list[Tool] = [
 
 async def handle(name: str, arguments: dict[str, Any]) -> Any:
     """Execute a Seer tool and return the result."""
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
 
     match name:
         case "seer_lookup":
