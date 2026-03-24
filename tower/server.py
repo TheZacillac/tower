@@ -40,9 +40,13 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
     if handler is None:
         raise ValueError(f"Unknown tool: {name}")
 
+    # Normalize None arguments to empty dict (MCP SDK may pass None)
+    arguments = arguments or {}
+
     try:
         result = await handler(name, arguments)
-        return [TextContent(type="text", text=json.dumps(result, indent=2, default=str))]
+        text = json.dumps(result, indent=2, default=str)
+        return [TextContent(type="text", text=text)]
     except ValueError as e:
         return [TextContent(type="text", text=f"Invalid input: {e}")]
     except Exception as e:

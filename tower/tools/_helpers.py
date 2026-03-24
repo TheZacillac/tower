@@ -7,9 +7,9 @@ MAX_CONCURRENCY = 50
 
 
 def require_str(arguments: dict[str, Any], key: str) -> str:
-    """Extract and validate a required string argument."""
+    """Extract and validate a required non-empty string argument."""
     value = arguments.get(key)
-    if not value or not isinstance(value, str):
+    if not isinstance(value, str) or not value.strip():
         raise ValueError(f"Required argument '{key}' is missing or empty")
     return value
 
