@@ -13,7 +13,8 @@ dependencies = [
     "mcp>=1.0",
     "seer>=0.10.2",
     "tome>=0.1.0",
-    "scrolls>=0.1.0",
+    # Note: scrolls is NOT a Python import dependency of tower.
+    # It is only needed at runtime via the uvx --with flag in .mcp.json.
 ]
 
 [project.optional-dependencies]

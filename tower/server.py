@@ -38,7 +38,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> list[TextContent]:
     """Route a tool call to the appropriate module handler."""
     handler = _HANDLERS.get(name)
     if handler is None:
-        return [TextContent(type="text", text=f"Unknown tool: {name}")]
+        raise ValueError(f"Unknown tool: {name}")
 
     try:
         result = await handler(name, arguments)
