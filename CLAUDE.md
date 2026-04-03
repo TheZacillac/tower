@@ -1,6 +1,6 @@
 # CLAUDE.md - Tower
 
-Tower is a unified MCP (Model Context Protocol) server that aggregates domain intelligence tools from Seer and Tome into a single entry point for AI assistants. It exposes 19 tools over stdio transport.
+Tower is a unified MCP (Model Context Protocol) server that aggregates domain intelligence tools from Seer and Tome into a single entry point for AI assistants. It exposes 22 tools over stdio transport.
 
 ---
 
@@ -41,7 +41,7 @@ The server auto-discovers tools from all modules in `_TOOL_MODULES`.
 
 ---
 
-## All 19 Tools
+## All 22 Tools
 
 ### Seer Tools (13)
 
@@ -66,7 +66,7 @@ The server auto-discovers tools from all modules in `_TOOL_MODULES`.
 | `seer_bulk_status` | `domains[]`, `concurrency?` | Bulk health check |
 | `seer_bulk_propagation` | `domains[]`, `record_type?`, `concurrency?` | Bulk propagation |
 
-### Tome Tools (6)
+### Tome Tools (9)
 
 | Tool | Input | Description |
 |------|-------|-------------|
@@ -76,6 +76,9 @@ The server auto-discovers tools from all modules in `_TOOL_MODULES`.
 | `tome_record_search` | `query` | Search record types |
 | `tome_glossary_lookup` | `term` | Domain industry term definition |
 | `tome_glossary_search` | `query` | Search glossary |
+| `tome_tld_overview` | `tld` | Comprehensive TLD overview (joins all data) |
+| `tome_tld_list_by_type` | `tld_type` | List TLDs by type (gTLD, ccTLD, nTLD) |
+| `tome_tld_count` | — | Total TLD count in database |
 
 ---
 

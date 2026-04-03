@@ -34,7 +34,7 @@ Tower provides a single MCP (Model Context Protocol) server that exposes tools f
 | **Bundled Skills** | Installs [Scrolls](https://github.com/TheZacillac/scrolls) — AI agent skill definitions for Seer and Tome |
 | **Bulk Operations** | Process up to 100 domains concurrently for any Seer operation |
 | **Modular Design** | Each tool source is an independent module — easy to add, remove, or update |
-| **19 Tools** | 13 Seer tools + 6 Tome tools registered through a single dispatch table |
+| **22 Tools** | 13 Seer tools + 9 Tome tools registered through a single dispatch table |
 
 ---
 
@@ -46,7 +46,7 @@ Tower provides a single MCP (Model Context Protocol) server that exposes tools f
 │                    (MCP Server · stdio)                     │
 ├─────────────────────────────┬───────────────────────────────┤
 │      tower/tools/seer.py    │      tower/tools/tome.py      │
-│       (13 tools)            │        (6 tools)              │
+│       (13 tools)            │        (9 tools)              │
 └──────────┬──────────────────┴──────────────┬────────────────┘
            │                                 │
            ▼                                 ▼
@@ -75,7 +75,7 @@ Tower is a thin orchestration layer. All business logic lives in the upstream Ru
 
 ### Prerequisites
 
-- Python 3.9+
+- Python 3.10+
 - [Seer Python bindings](https://github.com/TheZacillac/seer) (seer-py) built and available
 - [Tome Python bindings](https://github.com/TheZacillac/tome) (tome-py) built and available
 - [uv](https://docs.astral.sh/uv/) (recommended) or pip
@@ -205,6 +205,9 @@ Reference database lookups powered by [Tome](https://github.com/TheZacillac/tome
 | `tome_record_search` | Search DNS record types by partial match |
 | `tome_glossary_lookup` | Look up a domain industry term or abbreviation |
 | `tome_glossary_search` | Search glossary terms by partial match |
+| `tome_tld_overview` | Comprehensive TLD overview — joins all related data |
+| `tome_tld_list_by_type` | List TLDs by type (gTLD, ccTLD, nTLD) |
+| `tome_tld_count` | Total number of TLDs in the database |
 
 ---
 
@@ -222,7 +225,7 @@ Skills are accessible programmatically after installation:
 ```python
 import scrolls
 
-scrolls.list_skills()                              # ['seer', 'tome']
+scrolls.list_skills()                              # ['other/cdn-detection', 'other/email-auth', ..., 'seer', 'tome']
 scrolls.skill_file("seer")                         # Path to seer/SKILL.md
 scrolls.skill_file("seer", "reference/cli.md")     # Path to CLI reference
 ```
@@ -237,7 +240,7 @@ Tower has no configuration of its own. Tool behavior is determined by the upstre
 |---------|--------|---------|
 | Bulk domain limit | Tower | 100 |
 | Max concurrency | Tower | 50 |
-| WHOIS timeout | Seer | 10 seconds |
+| WHOIS timeout | Seer | 15 seconds |
 | RDAP timeout | Seer | 30 seconds |
 | DNS timeout | Seer | 5 seconds |
 
@@ -349,7 +352,7 @@ tower/
         ├── __init__.py      # Tool module registry
         ├── _helpers.py      # Shared validation (require_str, require_domains, etc.)
         ├── seer.py          # Seer tool definitions and handlers (13 tools)
-        └── tome.py          # Tome tool definitions and handlers (6 tools)
+        └── tome.py          # Tome tool definitions and handlers (9 tools)
 ```
 
 ---

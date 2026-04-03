@@ -11,7 +11,7 @@ def require_str(arguments: dict[str, Any], key: str) -> str:
     value = arguments.get(key)
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"Required argument '{key}' is missing or empty")
-    return value
+    return value.strip()
 
 
 def require_domains(arguments: dict[str, Any]) -> list[str]:
@@ -24,7 +24,7 @@ def require_domains(arguments: dict[str, Any]) -> list[str]:
     for d in domains:
         if not isinstance(d, str) or not d.strip():
             raise ValueError("Each domain must be a non-empty string")
-    return domains
+    return [d.strip() for d in domains]
 
 
 def get_concurrency(arguments: dict[str, Any], default: int = 10) -> int:

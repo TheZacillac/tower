@@ -5,10 +5,16 @@ and bulk variants of each.
 """
 
 import asyncio
+import logging
+import time
 from typing import Any
 
 import seer
 from mcp.types import Tool
+
+logger = logging.getLogger("tower.tools.seer")
+
+import ipaddress
 
 from ._helpers import (
     MAX_BULK_DOMAINS,
@@ -17,6 +23,16 @@ from ._helpers import (
     require_domains,
     require_str,
 )
+
+VALID_RECORD_TYPES = {"A", "AAAA", "MX", "TXT", "NS", "SOA", "CNAME", "CAA", "PTR", "SRV", "ANY"}
+
+
+def _validate_record_type(record_type: str) -> str:
+    """Validate and normalize a DNS record type string."""
+    rt = record_type.strip().upper()
+    if rt not in VALID_RECORD_TYPES:
+        raise ValueError(f"'record_type' must be one of: {', '.join(sorted(VALID_RECORD_TYPES))}")
+    return rt
 
 TOOLS: list[Tool] = [
     Tool(
@@ -277,96 +293,98 @@ TOOLS: list[Tool] = [
 
 async def handle(name: str, arguments: dict[str, Any]) -> Any:
     """Execute a Seer tool and return the result."""
+    start = time.monotonic()
+    logger.debug("Seer tool called: %s args=%s", name, list(arguments.keys()))
     loop = asyncio.get_running_loop()
 
     match name:
         case "seer_lookup":
             domain = require_str(arguments, "domain")
-            return await loop.run_in_executor(None, seer.lookup, domain)
+            result = await loop.run_in_executor(None, seer.lookup, domain)
 
         case "seer_whois":
             domain = require_str(arguments, "domain")
-            return await loop.run_in_executor(None, seer.whois, domain)
+            result = await loop.run_in_executor(None, seer.whois, domain)
 
         case "seer_rdap_domain":
             domain = require_str(arguments, "domain")
-            return await loop.run_in_executor(None, seer.rdap_domain, domain)
+            result = await loop.run_in_executor(None, seer.rdap_domain, domain)
 
         case "seer_rdap_ip":
             ip = require_str(arguments, "ip")
-            return await loop.run_in_executor(None, seer.rdap_ip, ip)
+            try:
+                ipaddress.ip_address(ip)
+            except ValueError:
+                raise ValueError(f"'ip' must be a valid IPv4 or IPv6 address (got {ip!r})")
+            result = await loop.run_in_executor(None, seer.rdap_ip, ip)
 
         case "seer_rdap_asn":
             asn = arguments.get("asn")
             if isinstance(asn, bool) or not isinstance(asn, int) or asn < 0 or asn > 4294967295:
                 raise ValueError(f"'asn' must be an integer between 0 and 4294967295 (got {asn!r})")
-            return await loop.run_in_executor(None, seer.rdap_asn, asn)
+            result = await loop.run_in_executor(None, seer.rdap_asn, asn)
 
         case "seer_dig":
             domain = require_str(arguments, "domain")
-            record_type = arguments.get("record_type", "A")
-            if not isinstance(record_type, str) or not record_type.strip():
-                raise ValueError("'record_type' must be a non-empty string")
+            record_type = _validate_record_type(arguments.get("record_type", "A"))
             nameserver = arguments.get("nameserver")
             if nameserver is not None and not isinstance(nameserver, str):
                 raise ValueError("'nameserver' must be a string if provided")
-            return await loop.run_in_executor(
+            result = await loop.run_in_executor(
                 None, seer.dig, domain, record_type, nameserver
             )
 
         case "seer_propagation":
             domain = require_str(arguments, "domain")
-            record_type = arguments.get("record_type", "A")
-            if not isinstance(record_type, str) or not record_type.strip():
-                raise ValueError("'record_type' must be a non-empty string")
-            return await loop.run_in_executor(
+            record_type = _validate_record_type(arguments.get("record_type", "A"))
+            result = await loop.run_in_executor(
                 None, seer.propagation, domain, record_type
             )
 
         case "seer_status":
             domain = require_str(arguments, "domain")
-            return await loop.run_in_executor(None, seer.status, domain)
+            result = await loop.run_in_executor(None, seer.status, domain)
 
         case "seer_bulk_lookup":
             domains = require_domains(arguments)
             concurrency = get_concurrency(arguments, default=10)
-            return await loop.run_in_executor(
+            result = await loop.run_in_executor(
                 None, seer.bulk_lookup, domains, concurrency
             )
 
         case "seer_bulk_whois":
             domains = require_domains(arguments)
             concurrency = get_concurrency(arguments, default=10)
-            return await loop.run_in_executor(
+            result = await loop.run_in_executor(
                 None, seer.bulk_whois, domains, concurrency
             )
 
         case "seer_bulk_dig":
             domains = require_domains(arguments)
-            record_type = arguments.get("record_type", "A")
-            if not isinstance(record_type, str) or not record_type.strip():
-                raise ValueError("'record_type' must be a non-empty string")
+            record_type = _validate_record_type(arguments.get("record_type", "A"))
             concurrency = get_concurrency(arguments, default=10)
-            return await loop.run_in_executor(
+            result = await loop.run_in_executor(
                 None, seer.bulk_dig, domains, record_type, concurrency
             )
 
         case "seer_bulk_status":
             domains = require_domains(arguments)
             concurrency = get_concurrency(arguments, default=10)
-            return await loop.run_in_executor(
+            result = await loop.run_in_executor(
                 None, seer.bulk_status, domains, concurrency
             )
 
         case "seer_bulk_propagation":
             domains = require_domains(arguments)
-            record_type = arguments.get("record_type", "A")
-            if not isinstance(record_type, str) or not record_type.strip():
-                raise ValueError("'record_type' must be a non-empty string")
+            record_type = _validate_record_type(arguments.get("record_type", "A"))
             concurrency = get_concurrency(arguments, default=5)
-            return await loop.run_in_executor(
+            result = await loop.run_in_executor(
                 None, seer.bulk_propagation, domains, record_type, concurrency
             )
 
         case _:
             raise ValueError(f"Unknown seer tool: {name}")
+
+    elapsed = (time.monotonic() - start) * 1000
+    logger.info("Seer tool completed: %s elapsed_ms=%.1f", name, elapsed)
+    return result
