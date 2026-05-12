@@ -1,6 +1,6 @@
 # CLAUDE.md - Tower
 
-Tower is a unified MCP (Model Context Protocol) server that aggregates domain intelligence tools from Seer and Tome into a single entry point for AI assistants. It exposes 22 tools over stdio transport.
+Tower is a unified MCP (Model Context Protocol) server that aggregates domain intelligence tools from Seer and Tome into a single entry point for AI assistants. It exposes 33 tools over stdio transport (24 Seer + 9 Tome). Seer surface tracks `seer>=0.24.0`.
 
 ---
 
@@ -16,8 +16,8 @@ tower/
     └── tools/
         ├── __init__.py      # Tool module registry
         ├── _helpers.py      # Shared validation constants and functions
-        ├── seer.py          # 13 Seer tool definitions + handler
-        └── tome.py          # 6 Tome tool definitions + handler
+        ├── seer.py          # 24 Seer tool definitions + handler
+        └── tome.py          # 9 Tome tool definitions + handler
 ```
 
 Tower is a **thin orchestration layer** — it contains no business logic. All domain intelligence comes from the upstream Rust libraries (seer, tome) via their Python bindings.
@@ -41,30 +41,49 @@ The server auto-discovers tools from all modules in `_TOOL_MODULES`.
 
 ---
 
-## All 22 Tools
+## All 33 Tools
 
-### Seer Tools (13)
+### Seer Tools (24)
 
-**Single domain:**
+**Single domain / lookup:**
 | Tool | Input | Description |
 |------|-------|-------------|
 | `seer_lookup` | `domain` | Smart lookup (RDAP → WHOIS fallback) |
+| `seer_info` | `domain` | Lightweight flat metadata summary |
 | `seer_whois` | `domain` | WHOIS registration data |
+| `seer_rdap` | `query` | Auto-routing RDAP (domain/IP/ASN) |
 | `seer_rdap_domain` | `domain` | RDAP domain information |
 | `seer_rdap_ip` | `ip` | RDAP IP address lookup |
 | `seer_rdap_asn` | `asn` (int) | RDAP ASN lookup |
+| `seer_availability` | `domain` | Registration availability with confidence |
+
+**DNS:**
+| Tool | Input | Description |
+|------|-------|-------------|
 | `seer_dig` | `domain`, `record_type?`, `nameserver?` | DNS query |
 | `seer_propagation` | `domain`, `record_type?` | DNS propagation (29 servers) |
+| `seer_dns_compare` | `domain`, `record_type`, `server_a`, `server_b` | Compare DNS between two nameservers |
+| `seer_dns_follow` | `domain`, `record_type?`, `nameserver?`, `iterations?`, `interval_minutes?` | Monitor DNS changes over time |
+| `seer_dnssec` | `domain` | DNSSEC chain validation |
+
+**Security / health:**
+| Tool | Input | Description |
+|------|-------|-------------|
 | `seer_status` | `domain` | Health check (HTTP, SSL, expiration) |
+| `seer_ssl` | `domain` | TLS certificate analysis |
+| `seer_subdomains` | `domain` | CT-log subdomain enumeration |
+| `seer_diff` | `domain_a`, `domain_b` | Side-by-side domain comparison |
 
 **Bulk operations:**
 | Tool | Inputs | Description |
 |------|--------|-------------|
 | `seer_bulk_lookup` | `domains[]`, `concurrency?` | Bulk smart lookup |
+| `seer_bulk_info` | `domains[]`, `concurrency?` | Bulk lightweight metadata |
 | `seer_bulk_whois` | `domains[]`, `concurrency?` | Bulk WHOIS |
 | `seer_bulk_dig` | `domains[]`, `record_type?`, `concurrency?` | Bulk DNS |
 | `seer_bulk_status` | `domains[]`, `concurrency?` | Bulk health check |
 | `seer_bulk_propagation` | `domains[]`, `record_type?`, `concurrency?` | Bulk propagation |
+| `seer_bulk_availability` | `domains[]`, `concurrency?` | Bulk registration availability |
 
 ### Tome Tools (9)
 
@@ -174,7 +193,7 @@ python -c "from tower.tools import seer, tome; print(len(seer.TOOLS + tome.TOOLS
 ### Dependencies
 
 - `mcp>=1.0` — Model Context Protocol SDK
-- `seer>=0.10.2` — PyO3 bindings to Seer Rust library
+- `seer>=0.24.0` — PyO3 bindings to Seer Rust library
 - `tome>=0.1.0` — PyO3 bindings to Tome Rust library
 - `scrolls>=0.1.0` — Skill definitions
 
